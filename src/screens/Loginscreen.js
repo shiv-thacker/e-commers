@@ -7,16 +7,55 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Pressable,
+  Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const Loginscreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+
+        if (token) {
+          navigation.replace("BottomTabs");
+        }
+      } catch (error) {
+        console.log("error message", error);
+      }
+    };
+    checkLoginStatus();
+  }, []);
+
+  const handleLogin = () => {
+    const user = {
+      email: email,
+      password: password,
+    };
+
+    axios
+      .post("http://192.168.100.63:8000/login", user)
+      .then((response) => {
+        console.log(response);
+        const token = response.data.token;
+        AsyncStorage.setItem("authToken", token);
+        navigation.replace("BottomTabs");
+      })
+      .catch((error) => {
+        Alert.alert("Login Error", "Invalid email or password");
+        console.log(error);
+      });
+  };
 
   return (
     <SafeAreaView
@@ -36,7 +75,7 @@ const Loginscreen = () => {
             style={{
               fontSize: 17,
               fontWeight: "bold",
-              marinTop: 12,
+              marginTop: 12,
               color: "#041E42",
             }}
           >
@@ -122,6 +161,7 @@ const Loginscreen = () => {
         </View>
         <View style={{ marginTop: 80 }} />
         <Pressable
+          onPress={handleLogin}
           style={{
             width: 200,
             backgroundColor: "#FEBE10",
