@@ -9,6 +9,7 @@ import Homescreen from "../screens/Homescreen";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import ProductInfoscreen from "../screens/ProductInfoscreen";
 
 const Stacknavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -81,6 +82,11 @@ const Stacknavigator = () => {
         <Stack.Screen
           name="BottomTabs"
           component={BottomTabs}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProductInfoscreen"
+          component={ProductInfoscreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
