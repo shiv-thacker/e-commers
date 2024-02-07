@@ -8,17 +8,33 @@ import {
   Dimensions,
   ImageBackground,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { useSelector, useDispatch } from "react-redux";
+import { addToCart } from "../../redux/CartReducer";
 
 const ProductInfoscreen = () => {
   const route = useRoute();
   const { width } = Dimensions.get("window");
   const navigation = useNavigation();
+  const [addedToCart, setAddedToCart] = useState(false);
   const height = (width * 100) / 100;
+  const dispatch = useDispatch();
+  const addItemToCart = (item) => {
+    setAddedToCart(true);
+    dispatch(addToCart(item));
+    setTimeout(() => {
+      setAddedToCart(false);
+    }, 60000);
+  };
+
+  const cart = useSelector((state) => state.cart.cart);
+  console.log(cart);
+
   return (
     <ScrollView
       style={{ marginTop: 55, backgroundColor: "white", flex: 1 }}
@@ -160,12 +176,63 @@ const ProductInfoscreen = () => {
 
       <View style={{ padding: 10 }}>
         <Text style={{ fontSize: 15, fontWeight: "bold", marginVertical: 5 }}>
-          Total : {route?.params?.price}
+          Total : ₹{route?.params?.price}
         </Text>
         <Text style={{ color: "#00CED1" }}>
           Free Delivery Tomorrow by 3 PM. Order within 10hrs 30 mins
         </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            marginVertical: 5,
+            alignItems: "center",
+            gap: 5,
+          }}
+        >
+          <Ionicons name="location" size={24} color="black" />
+          <Text style={{ fontSize: 15, fontWeight: "500" }}>
+            Deliver To SUjan - Banglore 560019
+          </Text>
+        </View>
       </View>
+
+      <Text style={{ color: "green", marginHorizontal: 10, fontWeight: "500" }}>
+        IN Stock
+      </Text>
+      <Pressable
+        onPress={() => addItemToCart(route?.params?.item)}
+        style={{
+          backgroundColor: "#FFC72C",
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: 20,
+          padding: 10,
+          marginHorizontal: 10,
+          marginVertical: 10,
+        }}
+      >
+        {addedToCart ? (
+          <View>
+            <Text>Added To Cart</Text>
+          </View>
+        ) : (
+          <Text>Add to Cart</Text>
+        )}
+      </Pressable>
+
+      <Pressable
+        style={{
+          backgroundColor: "#FFAC1C",
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: 20,
+          padding: 10,
+          marginHorizontal: 10,
+          marginVertical: 10,
+        }}
+      >
+        <Text>Buy Now</Text>
+      </Pressable>
     </ScrollView>
   );
 };
