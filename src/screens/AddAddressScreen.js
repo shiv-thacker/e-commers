@@ -6,13 +6,36 @@ import {
   Pressable,
   TextInput,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Feather, AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { UserType } from "../../UserCOntext";
+import { Entypo } from "@expo/vector-icons";
 
 const AddAddressScreen = () => {
   const navigation = useNavigation();
+  const [addresses, setAddresses] = useState([]);
+  const { userId, setUserId } = useContext(UserType);
+  useEffect(() => {
+    fetchaddresses();
+  }, []);
+
+  const fetchaddresses = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.0.101:8000/addresses/${userId}`
+      );
+
+      const { addresses } = response.data;
+
+      setAddresses(addresses);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+  console.log("addresses", addresses);
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 25 }}>
       <View
@@ -66,6 +89,93 @@ const AddAddressScreen = () => {
           <MaterialIcons name="keyboard-arrow-right" size={24} color="black" />
         </Pressable>
         {/* all the added addresses */}
+        <Pressable>
+          {addresses?.map((item, index) => {
+            return (
+              <Pressable
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#D0D0D0",
+                  padding: 10,
+                  flexDirection: "column",
+                  gap: 5,
+                  marginVertical: 10,
+                }}
+              >
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
+                >
+                  <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                    {item?.name}
+                  </Text>
+                  <Entypo name="location-pin" size={24} color="red" />
+                </View>
+
+                <Text style={{ fontSize: 15, color: "#181818" }}>
+                  {item?.houseNo}, {item?.landmark}
+                </Text>
+                <Text style={{ fontSize: 15, color: "#181818" }}>
+                  {item?.streeet}
+                </Text>
+                <Text style={{ fontSize: 15, color: "#181818" }}>
+                  India, Rajkot
+                </Text>
+                <Text style={{ fontSize: 15, color: "#181818" }}>
+                  phone no: {item?.mobileNo}
+                </Text>
+                <Text style={{ fontSize: 15, color: "#181818" }}>
+                  pin code: {item?.postalCode}
+                </Text>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 10,
+                    marginTop: 7,
+                  }}
+                >
+                  <Pressable
+                    style={{
+                      backgroundColor: "#F5F5F5",
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 5,
+                      borderWidth: 0.5,
+                      borderColor: "#D0D0D0",
+                    }}
+                  >
+                    <Text>Edit</Text>
+                  </Pressable>
+                  <Pressable
+                    style={{
+                      backgroundColor: "#F5F5F5",
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 5,
+                      borderWidth: 0.5,
+                      borderColor: "#D0D0D0",
+                    }}
+                  >
+                    <Text>Remove</Text>
+                  </Pressable>
+                  <Pressable
+                    style={{
+                      backgroundColor: "#F5F5F5",
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 5,
+                      borderWidth: 0.5,
+                      borderColor: "#D0D0D0",
+                    }}
+                  >
+                    <Text>Set as Default</Text>
+                  </Pressable>
+                </View>
+              </Pressable>
+            );
+          })}
+        </Pressable>
       </View>
     </ScrollView>
   );

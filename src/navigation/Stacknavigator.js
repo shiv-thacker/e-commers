@@ -12,6 +12,8 @@ import { Ionicons } from "@expo/vector-icons";
 import ProductInfoscreen from "../screens/ProductInfoscreen";
 import AddAddressScreen from "../screens/AddAddressScreen";
 import AddressScreen from "../screens/AddressScreen";
+import CartScreen from "../screens/CartScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Stacknavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -37,7 +39,7 @@ const Stacknavigator = () => {
         />
         <Tab.Screen
           name="Profilescreen"
-          component={Homescreen}
+          component={ProfileScreen}
           options={{
             tabBarLabel: "Profile",
             tabBarLabelStyle: { color: "#008E97" },
@@ -52,7 +54,7 @@ const Stacknavigator = () => {
         />
         <Tab.Screen
           name="Cartscreen"
-          component={Homescreen}
+          component={CartScreen}
           options={{
             tabBarLabel: "Cart",
             tabBarLabelStyle: { color: "#008E97" },

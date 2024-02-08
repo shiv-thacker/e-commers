@@ -9,7 +9,7 @@ import {
   TextInput,
   Image,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useContext } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
@@ -23,6 +23,13 @@ import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { BottomModal, SlideAnimation, ModalContent } from "react-native-modals";
 import { Entypo } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+//import jwtdecode to decode this token
+import { jwtDecode } from "jwt-decode";
+
+//You need to poly-fill atob function using something like core-js, to solve atob error of jsondecode
+import "core-js/stable/atob";
+import { UserType } from "../../UserCOntext";
 
 const Homescreen = () => {
   // Logs.enableExpoCliLogging();
@@ -329,6 +336,9 @@ const Homescreen = () => {
     { label: "electronics", value: "electronics" },
     { label: "women's clothing", value: "women's clothing" },
   ]);
+  const [addresses, setAddresses] = useState([]);
+  const { userId, setUserId } = useContext(UserType);
+  const [selectedAddress, setSelectedAddress] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -346,6 +356,36 @@ const Homescreen = () => {
   const onGenderOpen = useCallback(() => {});
   const cart = useSelector((state) => state.cart.cart);
   const [modalVisible, setModalvisible] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.userId;
+      setUserId(userId, modalVisible);
+    };
+
+    fetchUser();
+  }, []);
+  useEffect(() => {
+    if (userId) {
+      fetchaddresses();
+    }
+  }, [userId, modalVisible]);
+
+  const fetchaddresses = async () => {
+    try {
+      const response = await axios.get(
+        `http://192.168.0.101:8000/addresses/${userId}`
+      );
+      const { addresses } = response.data;
+      setAddresses(addresses);
+    } catch (error) {
+      console.log("error blah", error);
+    }
+  };
+  console.log("addresses", addresses);
   return (
     <>
       <SafeAreaView
@@ -398,9 +438,15 @@ const Homescreen = () => {
           >
             <Ionicons name="location-outline" size={24} color="black" />
             <Pressable>
-              <Text style={{ fontSize: 13, fontWeight: "500" }}>
-                Deliver to shivang - rajkot 360005
-              </Text>
+              {selectedAddress ? (
+                <Text style={{ fontSize: 13, fontWeight: "500" }}>
+                  {selectedAddress?.name} - {selectedAddress?.street}
+                </Text>
+              ) : (
+                <Text style={{ fontSize: 13, fontWeight: "500" }}>
+                  Add a Address
+                </Text>
+              )}
             </Pressable>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
           </Pressable>
@@ -630,6 +676,61 @@ const Homescreen = () => {
             </Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {/* already added addresses */}
+            {addresses?.map((item, index) => {
+              return (
+                <Pressable
+                  onPress={() => setSelectedAddress(item)}
+                  style={{
+                    width: 140,
+                    height: 140,
+                    borderColor: "#D0D0D0",
+                    borderWidth: 1,
+                    padding: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: 3,
+                    marginRight: 15,
+                    marginTop: 10,
+                    backgroundColor:
+                      selectedAddress === item ? "#FBCEB1" : "white",
+                  }}
+                  key={index}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 3,
+                    }}
+                  >
+                    <Text style={{ fontSize: 13, fontWeight: "bold" }}>
+                      {item?.name}
+                    </Text>
+                    <Entypo name="location-pin" size={24} color="red" />
+                  </View>
+                  <Text
+                    style={{ fontSize: 13, width: 130, textAlign: "center" }}
+                    numberOfLines={1}
+                  >
+                    {item?.houseNo}, {item?.landmark}
+                  </Text>
+                  <Text
+                    style={{ fontSize: 13, width: 130, textAlign: "center" }}
+                    numberOfLines={1}
+                  >
+                    {item?.street}
+                  </Text>
+                  <Text
+                    style={{ fontSize: 13, width: 130, textAlign: "center" }}
+                    numberOfLines={1}
+                  >
+                    India, Rajkot
+                  </Text>
+                </Pressable>
+              );
+            })}
+
             <Pressable
               onPress={() => {
                 setModalvisible(false);

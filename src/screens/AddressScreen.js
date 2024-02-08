@@ -7,6 +7,7 @@ import {
   Pressable,
   Alert,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -29,6 +30,7 @@ const AddressScreen = () => {
   const [landmark, setLandmark] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const { userId, setUserId } = useContext(UserType);
+  const [loading, setLoaing] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -43,6 +45,7 @@ const AddressScreen = () => {
   }, []);
 
   const handleAddress = () => {
+    setLoaing(true);
     const address = {
       name,
       mobileNo,
@@ -55,6 +58,7 @@ const AddressScreen = () => {
     axios
       .post("http://192.168.0.101:8000/addresses", { userId, address })
       .then((response) => {
+        setLoaing(false);
         Alert.alert("success", "address added successfully");
         setName("");
         setMobileNo("");
@@ -68,6 +72,7 @@ const AddressScreen = () => {
         }, 5000);
       })
       .catch((error) => {
+        setLoaing(false);
         Alert.alert("Error", "failed to add address");
         console.log("error", error);
       });
@@ -209,7 +214,11 @@ const AddressScreen = () => {
             marginTop: 20,
           }}
         >
-          <Text style={{ fontWeight: "bold" }}>Add Address</Text>
+          {loading ? (
+            <ActivityIndicator />
+          ) : (
+            <Text style={{ fontWeight: "bold" }}>Add Address</Text>
+          )}
         </TouchableOpacity>
       </View>
     </ScrollView>
