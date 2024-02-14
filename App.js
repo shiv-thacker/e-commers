@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import Stacknavigator from "./src/navigation/Stacknavigator";
 import { Provider } from "react-redux";
-import Store from "./redux/Store";
+import Store from "./Store";
 import { ModalPortal } from "react-native-modals";
 import { UserContext } from "./UserCOntext";
 

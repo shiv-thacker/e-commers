@@ -37,7 +37,7 @@ const ProductInfoscreen = () => {
 
   return (
     <ScrollView
-      style={{ marginTop: 55, backgroundColor: "white", flex: 1 }}
+      style={{ backgroundColor: "white", flex: 1 }}
       showsVerticalScrollIndicator={false}
     >
       <View

@@ -15,8 +15,10 @@ import {
   incrementQuantity,
   removeFromCart,
 } from "../../redux/CartReducer";
+import { useNavigation } from "@react-navigation/native";
 
 const CartScreen = () => {
+  const navigation = useNavigation();
   const cart = useSelector((state) => state.cart.cart);
   console.log(cart);
 
@@ -37,7 +39,7 @@ const CartScreen = () => {
   };
 
   return (
-    <ScrollView style={{ marginTop: 25, backgroundColor: "white" }}>
+    <ScrollView style={{ backgroundColor: "white" }}>
       <View
         style={{
           backgroundColor: "#00CED1",
@@ -74,6 +76,7 @@ const CartScreen = () => {
       </View>
       <Text style={{ marginHorizontal: 10 }}>EMI details Availvable</Text>
       <Pressable
+        onPress={() => navigation.navigate("ConformationScreen")}
         style={{
           backgroundColor: "#FFC72C",
           padding: 10,

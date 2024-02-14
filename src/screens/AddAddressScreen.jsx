@@ -6,13 +6,14 @@ import {
   Pressable,
   TextInput,
 } from "react-native";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useCallback } from "react";
 import { Feather, AntDesign } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { UserType } from "../../UserCOntext";
 import { Entypo } from "@expo/vector-icons";
+// import Header from "../Common/Header";
 
 const AddAddressScreen = () => {
   const navigation = useNavigation();
@@ -35,39 +36,18 @@ const AddAddressScreen = () => {
       console.log("error", error);
     }
   };
+
+  //refresh the addresses when the component comes into the focus is basically when we navigate back
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchaddresses();
+    }, [])
+  );
   console.log("addresses", addresses);
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 25 }}>
-      <View
-        style={{
-          backgroundColor: "#00CED1",
-          padding: 10,
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginHorizontal: 7,
-            gap: 10,
-            backgroundColor: "white",
-            borderRadius: 3,
-            height: 38,
-            flex: 1,
-          }}
-        >
-          <AntDesign
-            style={{ paddingLeft: 10 }}
-            name="search1"
-            size={24}
-            color="black"
-          />
-          <TextInput placeholder="Search amazon.in" />
-        </Pressable>
-        <Feather name="mic" size={24} color="black" />
-      </View>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      {/* <Header /> */}
       <View style={{ padding: 10 }}>
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>Your Addresses</Text>
         <Pressable
@@ -183,4 +163,21 @@ const AddAddressScreen = () => {
 
 export default AddAddressScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  headerbackground: {
+    backgroundColor: "#00CED1",
+    padding: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchcontainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 7,
+    gap: 10,
+    backgroundColor: "white",
+    borderRadius: 3,
+    height: 38,
+    flex: 1,
+  },
+});

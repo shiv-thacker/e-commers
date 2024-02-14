@@ -80,7 +80,7 @@ const AddressScreen = () => {
   console.log(userId);
 
   return (
-    <ScrollView style={{ marginTop: 25 }}>
+    <ScrollView>
       <View style={{ height: 50, backgroundColor: "00CED1" }} />
 
       <View style={{ padding: 10 }}>

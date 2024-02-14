@@ -202,3 +202,73 @@ app.get("/addresses/:userId", async (req, res) => {
     res.status(500).json({ message: "error retrieveing the addresses" });
   }
 });
+
+//end point to store all the address
+
+app.post("/orders", async (req, res) => {
+  try {
+    const { userId, cartItems, totalPrice, shippingAddress, paymentMethod } =
+      req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    //create an array of product object from the cart item
+    const products = cartItems.map((item) => ({
+      name: item?.title,
+      quantity: item?.quantity,
+      price: item?.price,
+      image: item?.image,
+    }));
+
+    //create a new order
+    const order = new Order({
+      user: userId,
+      products: products,
+      totalPrice: totalPrice,
+      shippingAddress: shippingAddress,
+      paymentMethod: paymentMethod,
+    });
+
+    await order.save();
+
+    res.status(200).json({ message: "Order Create Successfully", order });
+  } catch (error) {
+    console.log("error creating orders", error);
+    res.status(500).json({ message: "Error creating orders" });
+  }
+});
+
+//get the user profile
+
+app.get("/profile/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Error retriving the user profile" });
+  }
+});
+
+app.get("/orders/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const orders = await Order.find({ user: userId }).populate("user");
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found for this user" });
+    }
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    res.status(500).json({ message: "Error" });
+  }
+});
